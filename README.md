@@ -63,7 +63,8 @@ UBA-VPC3/
 │   ├── evaluate.py
 │   ├── inference.py
 │   ├── test_config.py
-│   └── test_dataset.py
+│   ├── test_dataset.py
+│   └── test_model.py
 ├── data/
 │   ├── raw/
 │   ├── processed/
@@ -82,6 +83,11 @@ python scripts/test_config.py
 #### Verificar Dataset
 ```bash
 python scripts/test_dataset.py
+```
+
+#### Verificar Modelo
+```bash
+python scripts/test_model.py
 ```
 
 #### Entrenamiento

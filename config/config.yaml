@@ -1,12 +1,12 @@
 model:
-  name: "google/vit-base-patch16-224"
+  name: "apple/mobilevit-small"
   num_classes: 10
   freeze_backbone: false
 
 training:
   batch_size: 32
   learning_rate: 0.0001
-  num_epochs: 20
+  num_epochs: 10
   device: "cuda"
 
 data:

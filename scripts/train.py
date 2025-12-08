@@ -19,10 +19,18 @@ def main():
     config = load_config("config/config.yaml")
     device = get_device()
     
-    mlflow.set_experiment(config['mlflow']['experiment_name'])
     mlflow.set_tracking_uri(config['mlflow']['tracking_uri'])
+    
+    try:
+        experiment = mlflow.get_experiment_by_name(config['mlflow']['experiment_name'])
+        if experiment is None:
+            experiment_id = mlflow.create_experiment(config['mlflow']['experiment_name'])
+        else:
+            experiment_id = experiment.experiment_id
+    except Exception:
+        experiment_id = mlflow.create_experiment(config['mlflow']['experiment_name'])
 
-    with mlflow.start_run():
+    with mlflow.start_run(experiment_id=experiment_id):
         mlflow.log_params({
             'model_name': config['model']['name'],
             'num_classes': config['model']['num_classes'],

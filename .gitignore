@@ -1,0 +1,90 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# MLflow
+mlruns/
+mlartifacts/
+
+# Data
+data/raw/
+data/processed/
+*.csv
+*.pkl
+*.h5
+*.hdf5
+
+# Models and Checkpoints
+models/
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Cursor and Course Documentation (IGNORE)
+.cursorrules
+.cursor/
+*.mdc
+Clase_*.md
+SINTESIS_*.md
+TEMPLATE_*.md
+PLAN_DE_TRABAJO.md
+RESUMEN_*.md
+GUIA_*.md
+*.docx
+
+# Project specific
+informe/*.pdf
+*.pdf
+
+# Development documentation (not needed in final repo)
+ESTADO_DEL_PROYECTO.md
+INICIO_RAPIDO.md
+PASOS_PARA_COMENZAR.md
+PLAN_ACCION_INMEDIATO.md
+REGLAS_PASO_A_PASO.md
+

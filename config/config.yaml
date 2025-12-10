@@ -2,18 +2,22 @@ model:
   name: "apple/mobilevit-small"
   num_classes: 10
   freeze_backbone: false
+  image_size: 160
 
 training:
-  batch_size: 32
+  batch_size: 128
   learning_rate: 0.0001
-  num_epochs: 10
+  num_epochs: 3
   device: "cuda"
+  use_compile: true
+  fast_mode: true
 
 data:
   dataset_name: "cifar10"
   train_split: 0.8
   val_split: 0.1
   test_split: 0.1
+  subset_size: 10000
 
 mlflow:
   experiment_name: "vision_project"

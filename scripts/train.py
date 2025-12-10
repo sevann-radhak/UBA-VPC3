@@ -39,46 +39,67 @@ def main():
             'num_epochs': config['training']['num_epochs']
         })
 
+        print("📥 Loading dataset...")
         dataset = load_dataset(config['data']['dataset_name'])
         
         train_data = dataset['train']
         test_data = dataset['test']
 
-        train_images = [train_data[i]['img'] for i in range(len(train_data))]
-        train_labels = [train_data[i]['label'] for i in range(len(train_data))]
+        subset_size = config['data'].get('subset_size')
+        fast_mode = config['training'].get('fast_mode', False)
+        image_size = config['model'].get('image_size', 160)
 
-        test_images = [test_data[i]['img'] for i in range(len(test_data))]
-        test_labels = [test_data[i]['label'] for i in range(len(test_data))]
+        if subset_size and subset_size > 0:
+            print(f"⚡ Fast mode: Using subset of {subset_size} training samples")
+            train_data = train_data.select(range(min(subset_size, len(train_data))))
+            test_subset = min(subset_size // 5, len(test_data))
+            test_data = test_data.select(range(test_subset))
+            print(f"   Using {test_subset} test samples")
+
+        print("📊 Preparing datasets...")
+        train_images = list(train_data['img'])
+        train_labels = list(train_data['label'])
+
+        test_images = list(test_data['img'])
+        test_labels = list(test_data['label'])
 
         split_idx = len(test_data) // 2
 
         train_dataset = CustomDataset(
             images=train_images,
             labels=train_labels,
-            transform=get_train_transforms()
+            transform=get_train_transforms(image_size=image_size, fast_mode=fast_mode)
         )
 
         val_dataset = CustomDataset(
             images=test_images[:split_idx],
             labels=test_labels[:split_idx],
-            transform=get_val_transforms()
+            transform=get_val_transforms(image_size=image_size)
         )
 
         test_dataset = CustomDataset(
             images=test_images[split_idx:],
             labels=test_labels[split_idx:],
-            transform=get_val_transforms()
+            transform=get_val_transforms(image_size=image_size)
         )
 
+        device_str = str(device)
+        print(f"🚀 Creating data loaders (device: {device_str})...")
         train_loader, val_loader, test_loader = get_data_loaders(
             train_dataset, val_dataset, test_dataset,
-            batch_size=config['training']['batch_size']
+            batch_size=config['training']['batch_size'],
+            device=device_str
         )
 
+        use_compile = config['training'].get('use_compile', False) and device.type == 'cuda'
+        if use_compile:
+            print("⚡ Model compilation enabled for faster inference")
+        
         model = VisionModel(
             model_name=config['model']['name'],
             num_classes=config['model']['num_classes'],
-            freeze_backbone=config['model']['freeze_backbone']
+            freeze_backbone=config['model']['freeze_backbone'],
+            use_compile=use_compile
         )
 
         criterion = nn.CrossEntropyLoss()
@@ -87,13 +108,18 @@ def main():
             lr=config['training']['learning_rate']
         )
 
+        use_amp = device.type == 'cuda'
+        if use_amp:
+            print("⚡ Mixed precision (FP16) enabled for faster training")
+        
         trainer = Trainer(
             model=model,
             train_loader=train_loader,
             val_loader=val_loader,
             criterion=criterion,
             optimizer=optimizer,
-            device=device
+            device=device,
+            use_amp=use_amp
         )
 
         ensure_dir(Path("checkpoints"))

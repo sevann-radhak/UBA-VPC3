@@ -128,12 +128,19 @@ def main():
             train_metrics = trainer.train_epoch()
             val_metrics = trainer.validate()
 
-            mlflow.log_metrics({
+            metrics_to_log = {
                 'train_loss': train_metrics['loss'],
                 'train_accuracy': train_metrics['accuracy'],
                 'val_loss': val_metrics['loss'],
                 'val_accuracy': val_metrics['accuracy']
-            }, step=epoch)
+            }
+            
+            if 'precision' in val_metrics:
+                metrics_to_log['val_precision'] = val_metrics['precision']
+                metrics_to_log['val_recall'] = val_metrics['recall']
+                metrics_to_log['val_f1_score'] = val_metrics['f1_score']
+            
+            mlflow.log_metrics(metrics_to_log, step=epoch)
 
             trainer.save_checkpoint(
                 f"checkpoints/checkpoint_epoch_{epoch}.pt",
